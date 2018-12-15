@@ -1,1 +1,1 @@
-# sparseSCE
+# sparseSingleCell
