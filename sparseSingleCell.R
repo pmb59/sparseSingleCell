@@ -21,7 +21,6 @@ Ly <- list()
 Lt <- list()
 counter <- 0
 for(i in 1:length(files) ){
-    print(i)
     c1 <- fread(files[i], head=FALSE)
     c1f <- c1[  which (c1$V1==chr & c1$V2>= start-EXT & c1$V2 <= start+EXT)  , ]
     if (length(c1f$V3)>0  ){
