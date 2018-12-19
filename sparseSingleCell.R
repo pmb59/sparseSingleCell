@@ -52,6 +52,10 @@ for (j in 1:length(Lt) ){
 #---------------------------------
 pace <- FPCA(Ly=Ly_sorted, Lt=Lt_sorted, optns = list(maxK=30, nRegGrid=100, plot=TRUE) )
 
+pdf('design_plot.pdf',height=6, width=6)
+CreateDesignPlot(Lt_sorted, obsGrid = NULL, isColorPlot = TRUE, noDiagonal = TRUE, addLegend = TRUE)
+dev.off()
+
 library(wesanderson)
 cellcolor <- wes_palette("BottleRocket2",n=5, type="discrete")
 
@@ -63,6 +67,6 @@ for (i in 2:5){
     if (i==2 | i==3) CreatePathPlot( pace, K=9, subset = i, main = "", pch = 16, showMean=FALSE,col=cellcolor[i-1], ylab='GpC accessibility',xlab='chr7',main=paste('cell ', i-1) )
 }
 CreateScreePlot(pace)
-CreateFuncBoxPlot(pace, xlab = 'chr7', ylab = 'GpC accessibility',main='Functional box-plot',col='red')
+CreateFuncBoxPlot(pace, xlab = 'chr7', ylab = 'GpC accessibility',main='Functional box-plot',col='red', optns = list(variant='bagplot'))
 dev.off()
 
