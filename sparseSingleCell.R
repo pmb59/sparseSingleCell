@@ -1,13 +1,13 @@
 library(fdapace)
 library(data.table)
 
-#fgf4 (mm10), + strand
-chr=7
-start=144861386  
-end=144865243
-EXT=500
+#fgf4 (mm10), '+' strand
+chr = 7
+start = 144861386  
+end = 144865243
+EXT = 500
 
-# read scNMT-seq data 
+# read chormatin accessibility scNMT-seq data 
 files <-list.files(path = ".", pattern = "acc_processed.tsv", all.files = FALSE,
            full.names = FALSE, recursive = FALSE,
            ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE)
@@ -15,7 +15,7 @@ files <-list.files(path = ".", pattern = "acc_processed.tsv", all.files = FALSE,
 length(files)
 
 #---------------------------------
-# Input for FPCA
+# Prepare Input lists for FPCA
 #---------------------------------
 Ly <- list()
 Lt <- list()
@@ -63,8 +63,7 @@ pdf('Fig2.pdf',height=5, width=7)
 par(mfrow=c(2,3))
 par(mar=c(5,4,2,1))
 for (i in 2:5){
-    if (i==4 | i==5) CreatePathPlot( pace, K=9, subset = i, main = "", pch = 16, showMean=FALSE,col=cellcolor[i-1], xlab='chr7', ylab='GpC accessibility',main=paste('cell ', i-1) )
-    if (i==2 | i==3) CreatePathPlot( pace, K=9, subset = i, main = "", pch = 16, showMean=FALSE,col=cellcolor[i-1], ylab='GpC accessibility',xlab='chr7',main=paste('cell ', i-1) )
+    CreatePathPlot( pace, K=9, subset = i, main = "", pch = 16, showMean=FALSE,col=cellcolor[i-1], xlab='chr7', ylab='GpC accessibility',main=paste('cell ', i-1) )
 }
 CreateScreePlot(pace)
 CreateFuncBoxPlot(pace, xlab = 'chr7', ylab = 'GpC accessibility',main='Functional box-plot', optns = list(variant='pointwise'))
