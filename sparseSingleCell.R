@@ -1,16 +1,18 @@
 library(fdapace)
 library(data.table)
 
-#fgf4 (mm10), '+' strand
-chr = 7
-start = 144861386  
-end = 144865243
-EXT = 500
+# fgf4 (mm10), '+' strand
+chr <- 7
+start <- 144861386
+end <- 144865243
+EXT <- 500
 
-# read chormatin accessibility scNMT-seq data 
-files <- list.files(path = ".", pattern = "acc_processed.tsv", all.files = FALSE,
-           full.names = FALSE, recursive = FALSE,
-           ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE)
+# read chormatin accessibility scNMT-seq data
+files <- list.files(
+  path = ".", pattern = "acc_processed.tsv", all.files = FALSE,
+  full.names = FALSE, recursive = FALSE,
+  ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE
+)
 
 length(files)
 
@@ -20,52 +22,51 @@ length(files)
 Ly <- list()
 Lt <- list()
 counter <- 0
-for(i in 1:length(files) ){
-    c1 <- fread(files[i], head=FALSE)
-    c1f <- c1[  which (c1$V1==chr & c1$V2>= start-EXT & c1$V2 <= start+EXT)  , ]
-    if (length(c1f$V3)>0  ){
-        counter <-  counter + 1
-        Ly[[counter]] <- c1f$V3
-        Lt[[counter]] <- c1f$V2
-    }
-    rm(c1,c1f)
+for (i in 1:length(files)) {
+  c1 <- fread(files[i], head = FALSE)
+  c1f <- c1[which(c1$V1 == chr & c1$V2 >= start - EXT & c1$V2 <= start + EXT), ]
+  if (length(c1f$V3) > 0) {
+    counter <- counter + 1
+    Ly[[counter]] <- c1f$V3
+    Lt[[counter]] <- c1f$V2
+  }
+  rm(c1, c1f)
 }
 
 # Number of cells with at least one GpC value
 length(Ly)
 # Proportion of cells with data
-100* ( length(Ly)/length(files) )
+100 * (length(Ly) / length(files))
 
 #  Each vector in t should be in ascending order in fdapace
 Ly_sorted <- list()
 Lt_sorted <- list()
 ID <- list()
-for (j in 1:length(Lt) ){
-    temp <- sort(Lt[[j]], index.return=TRUE, decreasing=FALSE)$ix
-    Lt_sorted[[j]] <- Lt[[j]][temp]
-    Ly_sorted[[j]] <- Ly[[j]][temp]
-    rm(temp)
+for (j in 1:length(Lt)) {
+  temp <- sort(Lt[[j]], index.return = TRUE, decreasing = FALSE)$ix
+  Lt_sorted[[j]] <- Lt[[j]][temp]
+  Ly_sorted[[j]] <- Ly[[j]][temp]
+  rm(temp)
 }
 
 #---------------------------------
 # fdapace
 #---------------------------------
-pace <- FPCA(Ly=Ly_sorted, Lt=Lt_sorted, optns = list(maxK=30, nRegGrid=100, plot=TRUE, outPercent=c(0.06, 1 )) )
+pace <- FPCA(Ly = Ly_sorted, Lt = Lt_sorted, optns = list(maxK = 30, nRegGrid = 100, plot = TRUE, outPercent = c(0.06, 1)))
 
-pdf('Fig1_design_plot.pdf',height=6, width=6)
-    CreateDesignPlot(Lt_sorted, obsGrid = NULL, isColorPlot = TRUE, noDiagonal = TRUE, addLegend = TRUE)
+pdf("Fig1_design_plot.pdf", height = 6, width = 6)
+CreateDesignPlot(Lt_sorted, obsGrid = NULL, isColorPlot = TRUE, noDiagonal = TRUE, addLegend = TRUE)
 dev.off()
 
 library(wesanderson)
-cellcolor <- wes_palette("BottleRocket2",n=5, type="discrete")
+cellcolor <- wes_palette("BottleRocket2", n = 5, type = "discrete")
 
-pdf('Fig2.pdf',height=5, width=7)
-    par(mfrow=c(2,3))
-    par(mar=c(5,4,2,1))
-    for (i in 2:5){
-        CreatePathPlot( pace, K=9, subset = i, main = "", pch = 16, showMean=FALSE,col=cellcolor[i-1], xlab='chr7', ylab='GpC accessibility',main=paste('cell ', i-1) )
-    }
-    CreateScreePlot(pace)
-    CreateFuncBoxPlot(pace, xlab = 'chr7', ylab = 'GpC accessibility',main='Functional box-plot', optns = list(variant='pointwise'))
+pdf("Fig2.pdf", height = 5, width = 7)
+par(mfrow = c(2, 3))
+par(mar = c(5, 4, 2, 1))
+for (i in 2:5) {
+  CreatePathPlot(pace, K = 9, subset = i, main = "", pch = 16, showMean = FALSE, col = cellcolor[i - 1], xlab = "chr7", ylab = "GpC accessibility", main = paste("cell ", i - 1))
+}
+CreateScreePlot(pace)
+CreateFuncBoxPlot(pace, xlab = "chr7", ylab = "GpC accessibility", main = "Functional box-plot", optns = list(variant = "pointwise"))
 dev.off()
-
